@@ -14,8 +14,16 @@ export async function createTodo(InsertTodoData: InsertTodo) {
   }
 }
 
-export async function getTodos() {
+export async function getTodos(userId?: number) {
   try {
+    if (userId) {
+      const userTodos = await db
+        .select()
+        .from(todosTable)
+        .where(eq(todosTable.user_id, userId));
+      return userTodos;
+    }
+    
     const allTodos = await db.select().from(todosTable);
     return allTodos;
 

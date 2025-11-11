@@ -1,14 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createTodo } from "@/data/todos";
+import { verifyJWT, unauthorizedResponse } from "@/libs/session";
 
 const todoSchema = z.object({
   title: z.string().min(1, "Title is required").max(255, "Title is too long"),
-  user_id: z.number().int().positive("User ID must be a positive integer"),
   is_done: z.boolean().optional().default(false),
 });
 
 export async function POST(request: NextRequest) {
+  const session = await verifyJWT(request);
+  
+  if (!session) {
+    return unauthorizedResponse();
+  }
+
   try {
     const body = await request.json();
     const validatedData = todoSchema.safeParse(body);
@@ -20,7 +26,13 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    const result = await createTodo(validatedData.data);
+    // Add user_id from the authenticated session
+    const todoData = {
+      ...validatedData.data,
+      user_id: parseInt(session.userId),
+    };
+    
+    const result = await createTodo(todoData);
 
     if (result instanceof Error) {
       return NextResponse.json(
