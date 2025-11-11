@@ -11,8 +11,16 @@ const todoSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const validatedData = todoSchema.parse(body);
-    const result = await createTodo(validatedData);
+    const validatedData = todoSchema.safeParse(body);
+    
+    if (!validatedData.success) {
+      return NextResponse.json(
+        { error: "Validation failed", issues: validatedData.error.issues },
+        { status: 400 }
+      );
+    }
+    
+    const result = await createTodo(validatedData.data);
 
     if (result instanceof Error) {
       return NextResponse.json(
