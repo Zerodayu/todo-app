@@ -60,6 +60,20 @@ export async function updateTodoStatus(id: number, isDone: boolean) {
   }
 }
 
+export async function updateTodo(id: number, data: { title?: string; is_done?: boolean }) {
+  try {
+    const updatedTodo = await db
+      .update(todosTable)
+      .set(data)
+      .where(eq(todosTable.id, id))
+      .returning();
+    return updatedTodo[0];
+  } catch (error) {
+    console.error("Error updating todo:", error);
+    return error;
+  }
+}
+
 export async function deleteTodo(id: number) {
   try {
     const deletedTodo = await db
