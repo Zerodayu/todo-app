@@ -1,0 +1,65 @@
+"use server";
+
+import { db } from "@/db/drizzle";
+import { todosTable, InsertTodo } from "@/db/schema";
+import { eq } from "drizzle-orm";
+
+export async function getTodos() {
+  try {
+    const allTodos = await db.select().from(todosTable);
+    return allTodos;
+
+  } catch (error) {
+    console.error("Error fetching todos:", error);
+    return error;
+  }
+}
+
+export async function getTodoById(id: number) {
+  try {
+    const getTodo = await db
+      .select()
+      .from(todosTable)
+      .where(eq(todosTable.id, id))
+      .limit(1);
+    return getTodo[0];
+  } catch (error) {
+    console.error("Error fetching todo by id:", error);
+    return error;
+  }
+}
+
+export async function createTodo(InsertTodoData: InsertTodo) {
+  try {
+    const newTodo = await db.insert(todosTable).values(InsertTodoData);
+    return newTodo;
+  } catch (error) {
+    console.error("Error creating todo:", error);
+    return error;
+  }
+}
+
+export async function updateTodoStatus(id: number, isDone: boolean) {
+  try {
+    const updatedTodo = await db
+      .update(todosTable)
+      .set({ is_done: isDone })
+      .where(eq(todosTable.id, id));
+    return updatedTodo;
+  } catch (error) {
+    console.error("Error updating todo status:", error);
+    return error;
+  }
+}
+
+export async function deleteTodo(id: number) {
+  try {
+    const deletedTodo = await db
+      .delete(todosTable)
+      .where(eq(todosTable.id, id));
+    return deletedTodo;
+  } catch (error) {
+    console.error("Error deleting todo:", error);
+    return error;
+  }
+}
