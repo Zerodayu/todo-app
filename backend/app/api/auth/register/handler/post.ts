@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { hash } from 'bcrypt-ts';
+import { createUser } from '@/data/users';
 
 // Define the registration schema
 const registerSchema = z.object({
@@ -28,8 +29,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Hash the password
     const hashedPassword = await hash(validatedData.data.password, 10);
+
+    // Save user to database
+    const newUser = await createUser({
+      name: validatedData.data.name,
+      email: validatedData.data.email,
+      password: hashedPassword,
+    });
+
+    // Check if user creation failed
+    if (newUser instanceof Error) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Failed to create user',
+        },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json(
       {
@@ -38,7 +56,6 @@ export async function POST(request: NextRequest) {
         data: {
           email: validatedData.data.email,
           name: validatedData.data.name,
-          hashedPassword, 
         },
       },
       { status: 201 }
