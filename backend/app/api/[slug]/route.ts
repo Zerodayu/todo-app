@@ -5,5 +5,5 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> },
 ) {
   const { slug } = await params;
-  return NextResponse.json({ message: `Hello ${slug}!` });
+  return NextResponse.json({ message: `Hello ${slug}! this is simple todo app api` });
 }
