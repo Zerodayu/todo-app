@@ -4,6 +4,16 @@ import { db } from "@/db/drizzle";
 import { todosTable, InsertTodo } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
+export async function createTodo(InsertTodoData: InsertTodo) {
+  try {
+    const newTodo = await db.insert(todosTable).values(InsertTodoData);
+    return newTodo;
+  } catch (error) {
+    console.error("Error creating todo:", error);
+    return error;
+  }
+}
+
 export async function getTodos() {
   try {
     const allTodos = await db.select().from(todosTable);
@@ -25,16 +35,6 @@ export async function getTodoById(id: number) {
     return getTodo[0];
   } catch (error) {
     console.error("Error fetching todo by id:", error);
-    return error;
-  }
-}
-
-export async function createTodo(InsertTodoData: InsertTodo) {
-  try {
-    const newTodo = await db.insert(todosTable).values(InsertTodoData);
-    return newTodo;
-  } catch (error) {
-    console.error("Error creating todo:", error);
     return error;
   }
 }
