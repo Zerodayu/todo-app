@@ -3,7 +3,6 @@ import { z } from 'zod';
 import { hash } from 'bcrypt-ts';
 import { createUser } from '@/data/users';
 
-// Define the registration schema
 const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').optional(),
   email: z.string().email('Invalid email format'),
@@ -31,14 +30,12 @@ export async function POST(request: NextRequest) {
 
     const hashedPassword = await hash(validatedData.data.password, 10);
 
-    // Save user to database
     const newUser = await createUser({
       name: validatedData.data.name,
       email: validatedData.data.email,
       password: hashedPassword,
     });
 
-    // Check if user creation failed
     if (newUser instanceof Error) {
       return NextResponse.json(
         {
