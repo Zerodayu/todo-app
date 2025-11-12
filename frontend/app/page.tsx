@@ -1,5 +1,5 @@
 import Navbar from "@/components/navbar";
-import Image from "next/image";
+import ShowTodos from "@/components/todo-list";
 
 export default function Home() {
   return (
@@ -12,6 +12,7 @@ export default function Home() {
             Manage your tasks efficiently and stay organized.
           </p>
         </div>
+          <ShowTodos />
       </div>
     </section>
   );
