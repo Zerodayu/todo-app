@@ -1,0 +1,21 @@
+- Backend
+
+requirements {
+  - Postgre sql
+  - Drizzle ORM
+  - JWT token function
+}
+
+  Auth {
+    - POST /api/register – accepts { name, email, password } and creates a new user.
+    - POST /api/login – accepts { email, password } and returns a JWT token.
+  }
+
+  todo route (protected) {
+    - GET /api/todos – return all todos belonging to the logged-in user.
+    - POST /api/todos – accept { title } and create a new todo for the logged-in user.
+    - DELETE /api/todos/:id – delete a todo by ID (only if it belongs to the user).
+    - PATCH /api/todos/:id/toggle – toggle the is_done status.
+
+    - Protect all /api/todos routes using a JWT middleware that verifies tokens from the Authorization: Bearer <token> header. Unauthorized requests should return 401 Unauthorized.
+  }
