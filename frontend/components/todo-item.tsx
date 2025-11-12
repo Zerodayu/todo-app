@@ -3,6 +3,7 @@
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { updateTodo } from "@/server/update-todo";
+import { deleteTodo } from "@/server/del-todo";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -30,6 +31,18 @@ export function TodoItem({ todo }: { todo: Todo }) {
     }
   };
 
+  const handleDelete = async () => {
+    setIsLoading(true);
+    try {
+      await deleteTodo(todo.id);
+      router.refresh();
+    } catch (error) {
+      console.error("Failed to delete todo:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="flex items-center justify-between p-4 border rounded-lg">
       <span className="flex flex-col">
@@ -38,9 +51,14 @@ export function TodoItem({ todo }: { todo: Todo }) {
         </Badge>
         <p>{todo.title}</p>
       </span>
-      <Button onClick={handleToggle} disabled={isLoading}>
-        {todo.is_done ? "Mark as Undone" : "Mark as Done"}
-      </Button>
+      <span className="flex gap-2">
+        <Button onClick={handleToggle} disabled={isLoading}>
+          {todo.is_done ? "Mark as Undone" : "Mark as Done"}
+        </Button>
+        <Button variant="destructive" onClick={handleDelete} disabled={isLoading}>
+          Delete
+        </Button>
+      </span>
     </div>
   );
 }
