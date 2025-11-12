@@ -14,32 +14,31 @@ export async function createTodo(InsertTodoData: InsertTodo) {
   }
 }
 
-export async function getTodos(userId?: number) {
+export async function getTodos(userId: number) {
   try {
-    if (userId) {
-      const userTodos = await db
-        .select()
-        .from(todosTable)
-        .where(eq(todosTable.user_id, userId));
-      return userTodos;
-    }
-    
-    const allTodos = await db.select().from(todosTable);
-    return allTodos;
-
+    const userTodos = await db
+      .select()
+      .from(todosTable)
+      .where(eq(todosTable.user_id, userId));
+    return userTodos;
   } catch (error) {
     console.error("Error fetching todos:", error);
     return error;
   }
 }
 
-export async function getTodoById(id: number) {
+export async function getTodoById(id: number, userId: number) {
   try {
     const getTodo = await db
       .select()
       .from(todosTable)
       .where(eq(todosTable.id, id))
       .limit(1);
+
+    if (getTodo[0] && getTodo[0].user_id !== userId) {
+      return null;
+    }
+
     return getTodo[0];
   } catch (error) {
     console.error("Error fetching todo by id:", error);
@@ -47,8 +46,13 @@ export async function getTodoById(id: number) {
   }
 }
 
-export async function updateTodoStatus(id: number, isDone: boolean) {
+export async function updateTodoStatus(id: number, isDone: boolean, userId: number) {
   try {
+    const todo = await getTodoById(id, userId);
+    if (!todo) {
+      return null;
+    }
+
     const updatedTodo = await db
       .update(todosTable)
       .set({ is_done: isDone })
@@ -60,8 +64,13 @@ export async function updateTodoStatus(id: number, isDone: boolean) {
   }
 }
 
-export async function updateTodo(id: number, data: { title?: string; is_done?: boolean }) {
+export async function updateTodo(id: number, data: { title?: string; is_done?: boolean }, userId: number) {
   try {
+    const todo = await getTodoById(id, userId);
+    if (!todo) {
+      return null;
+    }
+
     const updatedTodo = await db
       .update(todosTable)
       .set(data)
@@ -74,8 +83,13 @@ export async function updateTodo(id: number, data: { title?: string; is_done?: b
   }
 }
 
-export async function deleteTodo(id: number) {
+export async function deleteTodo(id: number, userId: number) {
   try {
+    const todo = await getTodoById(id, userId);
+    if (!todo) {
+      return null;
+    }
+
     const deletedTodo = await db
       .delete(todosTable)
       .where(eq(todosTable.id, id));
