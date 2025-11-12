@@ -29,7 +29,6 @@ export async function SignupAction(formData: FormData) {
     });
 
     if (response.data.success) {
-      // Redirect to login page after successful signup
       redirect("/auth/login");
     }
 
