@@ -1,9 +1,11 @@
+import Navbar from "@/components/navbar";
 import Image from "next/image";
 
 export default function Home() {
   return (
     <section>
-      <div className="flex w-full h-screen flex-col items-center justify-center p-6 md:p-10">
+        <Navbar />
+      <div className="flex w-full h-screen flex-col items-center p-6 md:p-10">
         <div className="mb-8 text-center">
           <h1 className="mb-4 text-4xl font-bold">Welcome to the Todo App</h1>
           <p className="text-lg text-gray-600">
