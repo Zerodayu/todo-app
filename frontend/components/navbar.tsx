@@ -1,4 +1,10 @@
 import { Button } from "./ui/button"
+import Link from "next/link";
+import { LogoutAction } from "@/server/logout-action";
+import {
+  IsLoggedIn,
+  IsLoggedOut,
+} from "./useSession"
 
 export default function Navbar() {
   return (
@@ -9,18 +15,28 @@ export default function Navbar() {
 
       <div className="flex items-center gap-4">
         {/* logged out */}
-        <Button>
-          Login
-        </Button>
-        <Button variant="outline">
-          Signup
-        </Button>
+        <IsLoggedOut>
+          <Link href="/auth/login">
+            <Button>
+              Login
+            </Button>
+          </Link>
+          <Link href="/auth/signup">
+            <Button variant="outline">
+              Signup
+            </Button>
+          </Link>
+        </IsLoggedOut>
 
         {/* logged in */}
-        <h1 className="font-mono font-bold">User name</h1>
-        <Button variant="destructive">
-          Logout
-        </Button>
+        <IsLoggedIn>
+          <h1 className="font-mono font-bold">User name</h1>
+          <form action={LogoutAction}>
+            <Button variant="destructive">
+              Logout
+            </Button>
+          </form>
+        </IsLoggedIn>
       </div>
     </nav>
   )
