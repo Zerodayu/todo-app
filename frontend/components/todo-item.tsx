@@ -44,7 +44,7 @@ export function TodoItem({ todo }: { todo: Todo }) {
   };
 
   return (
-    <div className="flex items-center justify-between p-4 border rounded-lg">
+    <div className="flex w-xl items-center justify-between p-4 border rounded-lg">
       <span className="flex flex-col">
         <Badge {...(todo.is_done ? {} : { variant: "outline" })}>
           {todo.is_done ? "Done" : "Pending"}

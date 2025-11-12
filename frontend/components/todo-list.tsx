@@ -4,6 +4,7 @@ import {
   IsLoggedOut,
 } from "./useSession"
 import { TodoItem } from "./todo-item";
+import AddTodoBtn from "./add-todo";
 
 export default async function ShowTodos() {
   const todos = await getTodos();
@@ -16,9 +17,12 @@ export default async function ShowTodos() {
         </p>
       </IsLoggedOut>
       <IsLoggedIn>
-        {todos.map((todo) => (
-          <TodoItem key={todo.id} todo={todo} />
-        ))}
+        <div className="flex flex-col w-full justify-center items-center gap-4">
+          {todos?.map((todo) => (
+            <TodoItem key={todo.id} todo={todo} />
+          ))}
+          <AddTodoBtn />
+        </div>
       </IsLoggedIn>
     </section>
   )

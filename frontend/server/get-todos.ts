@@ -11,11 +11,11 @@ export interface Todo {
   created_at: string;
 }
 
-export async function getTodos(): Promise<Todo[]> {
+export async function getTodos(): Promise<Todo[] | null> {
   const session = await getSession();
   
   if (!session) {
-    throw new Error('Not authenticated');
+    return null;
   }
 
   const response = await api.get<Todo[]>('/todos', {
