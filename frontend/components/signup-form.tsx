@@ -19,30 +19,35 @@ import { Input } from "@/components/ui/input"
 import { SignupAction } from "@/server/signup-action"
 import { useState, useTransition } from "react"
 
+type FieldError = {
+  field: string;
+  message: string;
+};
+
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   const [error, setError] = useState<string>("")
+  const [fieldErrors, setFieldErrors] = useState<FieldError[]>([])
   const [isPending, startTransition] = useTransition()
+
+  const getFieldError = (fieldName: string) => {
+    return fieldErrors.find(err => err.field === fieldName)?.message
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setError("")
+    setFieldErrors([])
 
     const formData = new FormData(e.currentTarget)
-    
-    // Check if passwords match
-    const password = formData.get("password") as string
-    const confirmPassword = formData.get("confirm-password") as string
-    
-    if (password !== confirmPassword) {
-      setError("Passwords do not match")
-      return
-    }
     
     startTransition(async () => {
       const result = await SignupAction(formData)
       
       if (!result.success) {
         setError(result.message)
+        if (result.errors) {
+          setFieldErrors(result.errors)
+        }
       }
       // If success, redirect happens in the server action
     })
@@ -73,7 +78,11 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                 placeholder="John Doe" 
                 required 
                 disabled={isPending}
+                className={getFieldError("name") ? "border-red-500" : ""}
               />
+              {getFieldError("name") && (
+                <p className="text-sm text-red-500 mt-1">{getFieldError("name")}</p>
+              )}
             </Field>
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -84,11 +93,16 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                 placeholder="m@example.com"
                 required
                 disabled={isPending}
+                className={getFieldError("email") ? "border-red-500" : ""}
               />
-              <FieldDescription>
-                You&apos;ll use this to login. We will not share your email
-                with anyone else.
-              </FieldDescription>
+              {getFieldError("email") ? (
+                <p className="text-sm text-red-500 mt-1">{getFieldError("email")}</p>
+              ) : (
+                <FieldDescription>
+                  You&apos;ll use this to login. We will not share your email
+                  with anyone else.
+                </FieldDescription>
+              )}
             </Field>
             <Field>
               <FieldLabel htmlFor="password">Password</FieldLabel>
@@ -98,10 +112,15 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                 type="password" 
                 required 
                 disabled={isPending}
+                className={getFieldError("password") ? "border-red-500" : ""}
               />
-              <FieldDescription>
-                Must be at least 8 characters long.
-              </FieldDescription>
+              {getFieldError("password") ? (
+                <p className="text-sm text-red-500 mt-1">{getFieldError("password")}</p>
+              ) : (
+                <FieldDescription>
+                  Must be at least 8 characters long.
+                </FieldDescription>
+              )}
             </Field>
             <Field>
               <FieldLabel htmlFor="confirm-password">
@@ -113,8 +132,13 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                 type="password" 
                 required 
                 disabled={isPending}
+                className={getFieldError("confirmPassword") ? "border-red-500" : ""}
               />
-              <FieldDescription>Please confirm your password.</FieldDescription>
+              {getFieldError("confirmPassword") ? (
+                <p className="text-sm text-red-500 mt-1">{getFieldError("confirmPassword")}</p>
+              ) : (
+                <FieldDescription>Please confirm your password.</FieldDescription>
+              )}
             </Field>
             <Field>
               <Button type="submit" disabled={isPending} className="w-full">
