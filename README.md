@@ -41,7 +41,3 @@ npm run dev
 - jose
 - Axios
 - Shadcn
-
-----
-
-> [Demo Video - in progress](https://drive.google.com/file/d/1sGlIsYSXH_mxBv6CiBgDF2gotdKxkXK4/view?usp=sharing)
