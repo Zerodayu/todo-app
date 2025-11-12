@@ -3,8 +3,8 @@ import axios from 'axios';
 const apiUrl = process.env.API_URL;
 const apiKey = process.env.API_KEY;
 
-export const instance = axios.create({
+export const api = axios.create({
   baseURL: apiUrl,
-  timeout: 1000,
+  timeout: 10000,
   headers: {'x-api-key': apiKey}
 });
