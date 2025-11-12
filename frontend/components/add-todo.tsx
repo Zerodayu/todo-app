@@ -14,7 +14,7 @@ import {
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { addTodo } from "@/server/add-todo"
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { z } from 'zod';
 
 export default function AddTodoBtn() {
