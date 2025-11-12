@@ -3,6 +3,12 @@
 import { api } from "@/lib/axios";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { z } from "zod";
+
+const loginSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
 
 type LoginResponse = {
   success: boolean;
@@ -25,6 +31,22 @@ export async function LoginAction(formData: FormData) {
   const cookiesStore = await cookies();
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+
+  // Validate input
+  const validationResult = loginSchema.safeParse({ email, password });
+
+  if (!validationResult.success) {
+    const errors = validationResult.error.issues.map((err) => ({
+      field: err.path[0] as string,
+      message: err.message,
+    }));
+
+    return {
+      success: false,
+      message: "Validation failed",
+      errors,
+    };
+  }
 
   try {
     const response = await api.post<LoginResponse>("/auth/login", {
@@ -56,7 +78,7 @@ export async function LoginAction(formData: FormData) {
       errors: response.data.errors,
     };
   } catch (error: any) {
-    if ((error)) {
+    if (error?.digest?.startsWith("NEXT_REDIRECT")) {
       throw error;
     }
 

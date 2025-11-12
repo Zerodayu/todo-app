@@ -19,16 +19,27 @@ import { Input } from "@/components/ui/input"
 import { LoginAction } from "@/server/login-action"
 import { useState, useTransition } from "react"
 
+type FieldError = {
+  field: string;
+  message: string;
+};
+
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   const [error, setError] = useState<string>("")
+  const [fieldErrors, setFieldErrors] = useState<FieldError[]>([])
   const [isPending, startTransition] = useTransition()
+
+  function getFieldError(fieldName: string) {
+    return fieldErrors.find((err) => err.field === fieldName)?.message
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setError("")
+    setFieldErrors([])
 
     const formData = new FormData(e.currentTarget)
     
@@ -37,6 +48,9 @@ export function LoginForm({
       
       if (!result.success) {
         setError(result.message)
+        if (result.errors) {
+          setFieldErrors(result.errors)
+        }
       }
       // If success, redirect happens in the server action
     })
@@ -54,7 +68,7 @@ export function LoginForm({
         <CardContent>
           <form onSubmit={handleSubmit}>
             <FieldGroup>
-              {error && (
+              {error && !fieldErrors.length && (
                 <div className="text-sm text-red-500 mb-4 p-3 bg-red-50 rounded-md">
                   {error}
                 </div>
@@ -68,7 +82,13 @@ export function LoginForm({
                   placeholder="m@example.com"
                   required
                   disabled={isPending}
+                  className={getFieldError("email") ? "border-red-500" : ""}
                 />
+                {getFieldError("email") && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {getFieldError("email")}
+                  </p>
+                )}
               </Field>
               <Field>
                 <div className="flex items-center">
@@ -86,7 +106,13 @@ export function LoginForm({
                   type="password" 
                   required 
                   disabled={isPending}
+                  className={getFieldError("password") ? "border-red-500" : ""}
                 />
+                {getFieldError("password") && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {getFieldError("password")}
+                  </p>
+                )}
               </Field>
               <Field>
                 <Button type="submit" disabled={isPending} className="w-full">
