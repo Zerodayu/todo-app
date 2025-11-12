@@ -1,20 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createTodo } from "@/data/todos";
-import { verifyJWT, unauthorizedResponse } from "@/libs/session";
+import { AuthenticatedRequest } from "../route";
 
 const todoSchema = z.object({
   title: z.string().min(1, "Title is required").max(255, "Title is too long"),
   is_done: z.boolean().optional().default(false),
 });
 
-export async function POST(request: NextRequest) {
-  const session = await verifyJWT(request);
-  
-  if (!session) {
-    return unauthorizedResponse();
-  }
-
+export async function POST(request: AuthenticatedRequest) {
   try {
     const body = await request.json();
     const validatedData = todoSchema.safeParse(body);
@@ -29,7 +23,7 @@ export async function POST(request: NextRequest) {
     // Add user_id from the authenticated session
     const todoData = {
       ...validatedData.data,
-      user_id: parseInt(session.userId),
+      user_id: parseInt(request.session.userId),
     };
     
     const result = await createTodo(todoData);

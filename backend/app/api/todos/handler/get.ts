@@ -1,16 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getTodos } from "@/data/todos";
-import { verifyJWT, unauthorizedResponse } from "@/libs/session";
+import { AuthenticatedRequest } from "../route";
 
-export async function GET(request: NextRequest) {
-  const session = await verifyJWT(request);
-  
-  if (!session) {
-    return unauthorizedResponse();
-  }
-
+export async function GET(request: AuthenticatedRequest) {
   try {
-    const todos = await getTodos(parseInt(session.userId));
+    const todos = await getTodos(parseInt(request.session.userId));
     return NextResponse.json(todos, { status: 200 });
   } catch (error) {
     return NextResponse.json(
