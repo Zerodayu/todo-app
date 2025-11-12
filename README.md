@@ -33,5 +33,15 @@ cd frontend
 npm run dev
 ```
 
+### Tools used
+- Drizzle ORM
+- Neon Postgresql
+- zod
+- bcrypt
+- jose
+- Axios
+- Shadcn
+
+----
 
 > [Demo Video - in progress](https://www.youtube.com/)
