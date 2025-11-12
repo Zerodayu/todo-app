@@ -43,7 +43,7 @@ export async function PATCH(
     }
 
     // Check if todo exists and belongs to the user
-    const existingTodo = await getTodoById(todoId) as SelectTodo | Error | undefined;
+    const existingTodo = await getTodoById(todoId, parseInt(session.userId)) as SelectTodo | Error | null;
 
     if (!existingTodo || existingTodo instanceof Error) {
       return NextResponse.json(
@@ -52,7 +52,7 @@ export async function PATCH(
       );
     }
 
-    // Verify ownership
+    // Verify ownership (already handled in getTodoById, but keeping for clarity)
     if (existingTodo.user_id !== parseInt(session.userId)) {
       return NextResponse.json(
         { error: "Forbidden: You don't have permission to update this todo" },
@@ -61,9 +61,9 @@ export async function PATCH(
     }
 
     // Update the todo
-    const result = await updateTodo(todoId, validatedData.data);
+    const result = await updateTodo(todoId, validatedData.data, parseInt(session.userId));
 
-    if (result instanceof Error) {
+    if (result instanceof Error || result === null) {
       return NextResponse.json(
         { error: "Failed to update todo" },
         { status: 500 }

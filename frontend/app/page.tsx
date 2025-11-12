@@ -1,6 +1,6 @@
 import Navbar from "@/components/navbar";
 import ShowTodos from "@/components/todo-list";
-import { getTodos } from "@/api/get-todos-api";
+import { getTodos } from "@/server/get-todos";
 
 export default function Home() {
   return (

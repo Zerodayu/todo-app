@@ -1,3 +1,5 @@
+"use server";
+
 import { api } from '@/lib/axios';
 import { getSession } from '@/lib/session';
 
@@ -22,6 +24,5 @@ export async function getTodos(): Promise<Todo[]> {
     },
   });
 
-  console.log('Todos response:', response.data);
   return response.data;
 }
