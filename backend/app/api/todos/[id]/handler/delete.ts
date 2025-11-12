@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from "next/server";
 import { deleteTodo, getTodoById } from "@/data/todos";
 import { verifyJWT, unauthorizedResponse } from "@/libs/session";
@@ -26,7 +25,7 @@ export async function DELETE(
     }
 
     // Check if todo exists and belongs to the user
-    const existingTodo = await getTodoById(todoId) as SelectTodo | Error | undefined;
+    const existingTodo = await getTodoById(todoId, parseInt(session.userId)) as SelectTodo | Error | null | undefined;
 
     if (!existingTodo || existingTodo instanceof Error) {
       return NextResponse.json(
@@ -35,7 +34,7 @@ export async function DELETE(
       );
     }
 
-    // Verify ownership
+    // Verify ownership (already handled in getTodoById, but keeping for clarity)
     if (existingTodo.user_id !== parseInt(session.userId)) {
       return NextResponse.json(
         { error: "Forbidden: You don't have permission to delete this todo" },
@@ -43,9 +42,9 @@ export async function DELETE(
       );
     }
 
-    const result = await deleteTodo(todoId);
+    const result = await deleteTodo(todoId, parseInt(session.userId));
 
-    if (result instanceof Error) {
+    if (result instanceof Error || result === null) {
       return NextResponse.json(
         { error: "Failed to delete todo" },
         { status: 500 }
