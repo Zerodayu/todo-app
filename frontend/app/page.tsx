@@ -8,7 +8,7 @@ export default function Home() {
       <div className="flex w-full h-screen flex-col items-center p-6 md:p-10">
         <div className="mb-8 text-center">
           <h1 className="mb-4 text-4xl font-bold">Welcome to the Todo App</h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-muted-foreground">
             Manage your tasks efficiently and stay organized.
           </p>
         </div>
